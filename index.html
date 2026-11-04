@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Draftwell – legal document drafting</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=Newsreader:opsz,wght@6..72,400;6..72,600&family=Noto+Naskh+Arabic:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#EDF0F2;--panel:#fff;--ink:#16232B;--mute:#5B6B75;--line:#D5DCE1;--brand:#0F4C5C;--brandink:#fff;--sel:#E1EEF1;--shadow:rgba(15,40,50,.12);
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#0E161B;--panel:#17222A;--ink:#E6EEF2;--mute:#93A5AF;--line:#2B3B45;--brand:#5FB3C4;--brandink:#06222A;--sel:#1E3540;--shadow:rgba(0,0,0,.5)}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#0E161B;--panel:#17222A;--ink:#E6EEF2;--mute:#93A5AF;--line:#2B3B45;--brand:#5FB3C4;--brandink:#06222A;--sel:#1E3540;--shadow:rgba(0,0,0,.5)}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 "Hanken Grotesk",system-ui,-apple-system,"Segoe UI",sans-serif}
+header{display:flex;align-items:baseline;gap:14px;padding:18px 24px;border-bottom:1px solid var(--line);background:var(--panel)}
+header b{font:600 22px "Newsreader",Georgia,serif;letter-spacing:.2px}
+header span{color:var(--mute);font-size:14px}
+.app{display:grid;grid-template-columns:380px 1fr;gap:24px;padding:24px;max-width:1280px;margin:0 auto;align-items:start}
+.side{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px}
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px}
+.tabs button{font:inherit;text-align:left;padding:10px 12px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--ink);cursor:pointer}
+.tabs button small{display:block;color:var(--mute);font-size:12px;margin-top:2px}
+.tabs button[aria-pressed="true"]{background:var(--sel);border-color:var(--brand)}
+label{display:block;font-weight:600;font-size:13px;margin:12px 0 4px}
+input,textarea{width:100%;font:inherit;color:var(--ink);background:transparent;border:1px solid var(--line);border-radius:6px;padding:8px 10px}
+textarea{min-height:84px;resize:vertical}
+:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+.row{display:flex;gap:8px;margin-top:18px;flex-wrap:wrap}
+.btn{font:inherit;font-weight:600;padding:9px 14px;border-radius:8px;border:1px solid var(--brand);background:var(--brand);color:var(--brandink);cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+.note{color:var(--mute);font-size:12.5px;margin-top:14px}
+.stage{min-width:0}
+.paper{background:#fff;color:#1a1a1a;max-width:760px;margin:0 auto;padding:56px 64px;border-radius:3px;box-shadow:0 2px 18px var(--shadow);font:16px/1.7 "Newsreader",Georgia,"Times New Roman",serif}
+.paper h1{font:600 20px "Newsreader",Georgia,serif;text-align:center;letter-spacing:1px;margin:0 0 28px;text-decoration:underline;text-underline-offset:5px}
+.paper p{margin:0 0 14px;text-align:justify}
+.paper .ph{background:#FFE9A8;color:#5a4300;padding:0 3px;border-radius:2px}
+.sigs{display:flex;gap:40px;margin-top:56px;flex-wrap:wrap}
+.sigs div{flex:1;min-width:150px;font-size:14px}
+.sigs i{display:block;border-top:1px solid #1a1a1a;margin-bottom:4px}
+.wit{margin-top:36px}
+.wit h4{margin:0 0 10px;font-size:14px}
+.paper[dir=rtl]{font-family:"Noto Naskh Arabic","Times New Roman",serif;line-height:2.1}.paper[dir=rtl] p{text-align:right}.paper[dir=rtl] h1{letter-spacing:0}
+@media (max-width:900px){.app{grid-template-columns:1fr;padding:14px}.paper{padding:32px 22px}header{padding:14px}}
+@media print{body *{visibility:hidden}.paper,.paper *{visibility:visible}.paper{position:absolute;left:0;top:0;width:100%;max-width:none;box-shadow:none;padding:20mm}.paper .ph{background:none;color:inherit}}
+</style>
+</head>
+<body>
+<header><b>Draftwell</b><span>Fill in the details, get a ready-to-review legal draft.</span><button class="btn ghost" id="lang" type="button" style="margin-left:auto">اردو</button></header>
+<main class="app">
+  <section class="side">
+    <div class="tabs" id="tabs"></div>
+    <form id="form" onsubmit="return false"></form><datalist id="clients"></datalist>
+    <div class="row">
+      <button class="btn" id="copy" type="button">Copy text</button>
+      <button class="btn ghost" id="print" type="button">Print or save PDF</button>
+      <button class="btn ghost" id="addc" type="button">Save parties to client book</button>
+      <button class="btn ghost" id="clear" type="button">Clear form</button>
+    </div>
+    <p class="note">Yellow highlights show details still missing. These drafts are starting points: have a qualified person review them, and check stamp paper and registration requirements, before signing.</p>
+  </section>
+  <section class="stage"><article class="paper" id="paper" aria-live="polite"></article></section>
+</main>
+<script>
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const today=()=>new Date().toISOString().slice(0,10);
+const fmtD=s=>{if(!s)return'';const d=new Date(s+'T00:00:00');return isNaN(d)?s:d.toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})};
+let cur='tenancy',vals={},lang='en';
+const PTY={tenancy:[['ll','llc'],['tn','tnc']],affidavit:[['name','cnic']],gpa:[['pr','prc'],['at','atc']],sale:[['sl','slc'],['by','byc']],loan:[['lr','lrc'],['bw','bwc']],partner:[['p1','p1c'],['p2','p2c']]};
+const PNs=()=>new Set((PTY[cur]||[]).map(p=>p[0]));
+const clients=()=>{try{return JSON.parse(localStorage.getItem('dw:clients')||'[]')}catch(e){return[]}};
+const T={
+tenancy:{name:'Tenancy agreement',desc:'Residential rent',
+f:[['city','City','text','Karachi'],['date','Date of agreement','date','today'],['ll','Landlord’s full name'],['llc','Landlord’s CNIC'],['tn','Tenant’s full name'],['tnc','Tenant’s CNIC'],['addr','Property address','area'],['rent','Monthly rent (Rs.)','number'],['dep','Security deposit (Rs.)','number'],['months','Term in months','number','11'],['start','Start date','date']],
+doc:v=>({title:'TENANCY AGREEMENT',wit:1,p:[
+`This Tenancy Agreement is made at ${v('city')} on ${v('date')}.`,
+`BETWEEN ${v('ll')}, holder of CNIC No. ${v('llc')} (the “Landlord”), AND ${v('tn')}, holder of CNIC No. ${v('tnc')} (the “Tenant”).`,
+`1. The Landlord lets and the Tenant takes the premises situated at ${v('addr')} (the “Premises”) for residential use only.`,
+`2. The tenancy begins on ${v('start')} and continues for ${v('months')} months, and may be renewed by written consent of both parties.`,
+`3. The monthly rent is Rs. ${v('rent')}, payable in advance on or before the 5th day of each month.`,
+`4. The Tenant has paid a refundable security deposit of Rs. ${v('dep')}, to be returned on vacating, after deduction of any dues or damage beyond fair wear and tear.`,
+`5. The Tenant shall pay all utility bills during the tenancy and shall not sublet or part with possession of the Premises without the Landlord’s written consent.`,
+`6. The Tenant shall keep the Premises in good condition and shall make no structural change without written permission.`,
+`7. Either party may end the tenancy by giving one month’s written notice.`,
+`8. On expiry or termination, the Tenant shall hand back vacant possession of the Premises.`],
+sig:[['Landlord','ll'],['Tenant','tn']]}),
+ur:v=>({title:'کرایہ نامہ',wit:1,p:[
+`یہ کرایہ نامہ بمقام ${v('city')} بتاریخ ${v('date')} تحریر کیا گیا۔`,
+`درمیان ${v('ll')}، حامل شناختی کارڈ نمبر ${v('llc')} (جسے آئندہ “مالک مکان” کہا جائے گا) اور ${v('tn')}، حامل شناختی کارڈ نمبر ${v('tnc')} (جسے آئندہ “کرایہ دار” کہا جائے گا)۔`,
+`1۔ مالک مکان نے جائیداد واقع ${v('addr')} (“مکان”) صرف رہائشی مقصد کے لیے کرایہ دار کو کرائے پر دی۔`,
+`2۔ کرایہ داری ${v('start')} سے شروع ہو گی اور اس کی مدت ${v('months')} ماہ ہو گی، جس میں توسیع فریقین کی تحریری رضامندی سے ہو گی۔`,
+`3۔ ماہانہ کرایہ ${v('rent')} روپے ہو گا جو ہر ماہ کی 5 تاریخ تک پیشگی ادا کیا جائے گا۔`,
+`4۔ کرایہ دار نے ${v('dep')} روپے بطور قابلِ واپسی ضمانتی رقم ادا کیے ہیں، جو مکان خالی کرتے وقت واجبات یا غیر معمولی نقصان کی کٹوتی کے بعد واپس کیے جائیں گے۔`,
+`5۔ کرایہ دار تمام یوٹیلیٹی بل ادا کرے گا اور مالک مکان کی تحریری اجازت کے بغیر مکان آگے کرائے پر نہیں دے گا۔`,
+`6۔ کرایہ دار مکان کو اچھی حالت میں رکھے گا اور تحریری اجازت کے بغیر کوئی تعمیری تبدیلی نہیں کرے گا۔`,
+`7۔ کوئی بھی فریق ایک ماہ کا تحریری نوٹس دے کر کرایہ داری ختم کر سکتا ہے۔`,
+`8۔ مدت ختم ہونے پر کرایہ دار مکان کا خالی قبضہ واپس کرے گا۔`],
+sig:[['مالک مکان','ll'],['کرایہ دار','tn']]})},
+affidavit:{name:'Affidavit',desc:'General sworn statement',
+f:[['city','City','text','Karachi'],['date','Date','date','today'],['name','Deponent’s full name'],['father','Father’s or husband’s name'],['cnic','CNIC'],['addr','Address','area'],['stmt','Statement (what you are affirming)','area']],
+doc:v=>({title:'AFFIDAVIT',p:[
+`I, ${v('name')}, son/daughter/wife of ${v('father')}, holder of CNIC No. ${v('cnic')}, resident of ${v('addr')}, do hereby solemnly affirm and declare on oath as under:`,
+`1. That ${v('stmt')}`,
+`2. That nothing stated in this affidavit is false and nothing material has been concealed.`,
+`VERIFICATION: Verified on oath at ${v('city')} on ${v('date')} that the contents of the above affidavit are true and correct to the best of my knowledge and belief.`],
+sig:[['Deponent','name']]}),
+ur:v=>({title:'حلف نامہ',p:[
+`میں، ${v('name')}، ولد/زوجہ ${v('father')}، حامل شناختی کارڈ نمبر ${v('cnic')}، ساکن ${v('addr')}، حلفاً بیان کرتا/کرتی ہوں کہ:`,
+`1۔ ${v('stmt')}`,
+`2۔ اس حلف نامے میں درج کوئی بات غلط نہیں اور کوئی اہم بات چھپائی نہیں گئی۔`,
+`تصدیق: بمقام ${v('city')} بتاریخ ${v('date')} حلفاً تصدیق کی جاتی ہے کہ مندرجہ بالا بیان میرے علم اور یقین کے مطابق درست ہے۔`],
+sig:[['دستخط حلف کنندہ','name']]})},
+gpa:{name:'Power of attorney',desc:'General authority',
+f:[['city','City','text','Karachi'],['date','Date','date','today'],['pr','Principal’s full name'],['prc','Principal’s CNIC'],['at','Attorney’s full name'],['atc','Attorney’s CNIC'],['matter','Property or matter concerned','area'],['powers','Powers granted (one per line)','area']],
+doc:v=>({title:'GENERAL POWER OF ATTORNEY',wit:1,p:[
+`KNOW ALL PERSONS BY THESE PRESENTS that I, ${v('pr')}, holder of CNIC No. ${v('prc')}, hereby appoint ${v('at')}, holder of CNIC No. ${v('atc')}, as my true and lawful Attorney to act in my name and on my behalf in respect of ${v('matter')}, and in particular to:`,
+...((vals.powers||'').split('\n').filter(x=>x.trim()).map((x,i)=>`(${String.fromCharCode(97+i)}) ${esc(x.trim())}`)),
+...((vals.powers||'').trim()?[]:[`<span class="ph">[Powers granted]</span>`]),
+`I agree to ratify and confirm all lawful acts done by my Attorney under this Power of Attorney, which remains in force until I revoke it in writing.`,
+`Executed at ${v('city')} on ${v('date')}.`],
+sig:[['Principal','pr'],['Attorney (accepting)','at']]})},
+nda:{name:'NDA',desc:'Mutual confidentiality',
+f:[['city','City','text','Karachi'],['date','Date','date','today'],['dp','Disclosing party'],['rp','Receiving party'],['purpose','Purpose of disclosure','area'],['yrs','Confidentiality period (years)','number','3']],
+doc:v=>({title:'NON-DISCLOSURE AGREEMENT',p:[
+`This Non-Disclosure Agreement is made at ${v('city')} on ${v('date')} between ${v('dp')} (the “Disclosing Party”) and ${v('rp')} (the “Receiving Party”).`,
+`1. Purpose. The Disclosing Party will share certain information with the Receiving Party for the following purpose: ${v('purpose')}.`,
+`2. Confidential Information means all non-public information, in any form, disclosed by the Disclosing Party in connection with the Purpose.`,
+`3. The Receiving Party shall keep the Confidential Information secret, use it only for the Purpose, and not disclose it to any third party without prior written consent.`,
+`4. These obligations do not apply to information that is public through no fault of the Receiving Party, was already lawfully known to it, or was independently developed by it.`,
+`5. The obligations in this Agreement continue for ${v('yrs')} years from the date above.`,
+`6. On written request, the Receiving Party shall return or destroy all Confidential Information.`,
+`7. This Agreement is governed by the laws of Pakistan, and the courts at ${v('city')} have jurisdiction.`],
+sig:[['Disclosing Party','dp'],['Receiving Party','rp']]})},
+sale:{name:'Agreement to sell',desc:'Property sale',
+f:[['city','City','text','Karachi'],['date','Date','date','today'],['sl','Seller’s full name'],['slc','Seller’s CNIC'],['by','Buyer’s full name'],['byc','Buyer’s CNIC'],['prop','Property description','area'],['price','Total price (Rs.)','number'],['adv','Advance paid (Rs.)','number'],['comp','Balance due by','date']],
+doc:v=>({title:'AGREEMENT TO SELL',wit:1,p:[
+`This Agreement to Sell is made at ${v('city')} on ${v('date')}.`,
+`BETWEEN ${v('sl')}, holder of CNIC No. ${v('slc')} (the “Seller”), AND ${v('by')}, holder of CNIC No. ${v('byc')} (the “Buyer”).`,
+`1. The Seller agrees to sell and the Buyer agrees to buy the property described as ${v('prop')} (the “Property”), free from all encumbrances.`,
+`2. The total sale price is Rs. ${v('price')}.`,
+`3. The Buyer has paid Rs. ${v('adv')} as advance, receipt of which the Seller acknowledges, and shall pay the balance on or before ${v('comp')}.`,
+`4. On payment of the balance, the Seller shall hand over the original title documents and execute the sale deed before the registering authority.`,
+`5. The Seller confirms that the Property is not mortgaged, disputed or under attachment, and that the Seller has full right to sell it.`,
+`6. If the Buyer fails to pay the balance in time, the advance may be forfeited. If the Seller fails to complete the sale, the Seller shall refund the advance and all other amounts paid.`,
+`7. Taxes, registration charges and stamp duty shall be borne by the Buyer unless the parties agree otherwise in writing.`],
+sig:[['Seller','sl'],['Buyer','by']]})},
+loan:{name:'Loan agreement',desc:'Money lent between parties',
+f:[['city','City','text','Karachi'],['date','Date','date','today'],['lr','Lender’s full name'],['lrc','Lender’s CNIC'],['bw','Borrower’s full name'],['bwc','Borrower’s CNIC'],['amt','Loan amount (Rs.)','number'],['due','Repay in full by','date'],['terms','Repayment terms (e.g. monthly installments)','area']],
+doc:v=>({title:'LOAN AGREEMENT',wit:1,p:[
+`This Loan Agreement is made at ${v('city')} on ${v('date')} between ${v('lr')}, holder of CNIC No. ${v('lrc')} (the “Lender”), and ${v('bw')}, holder of CNIC No. ${v('bwc')} (the “Borrower”).`,
+`1. The Lender has advanced to the Borrower a loan of Rs. ${v('amt')}, receipt of which the Borrower acknowledges.`,
+`2. The Borrower shall repay the loan in full on or before ${v('due')}.`,
+`3. Repayment terms: ${v('terms')}.`,
+`4. The Borrower may repay early without penalty.`,
+`5. If the Borrower fails to repay on time, the Lender may recover the outstanding amount through legal proceedings, and the Borrower shall bear the reasonable costs of recovery.`,
+`6. Any change to this Agreement must be in writing and signed by both parties.`],
+sig:[['Lender','lr'],['Borrower','bw']]})},
+partner:{name:'Partnership deed',desc:'Two-partner business',
+f:[['city','City','text','Karachi'],['date','Date','date','today'],['p1','First partner’s full name'],['p1c','First partner’s CNIC'],['p2','Second partner’s full name'],['p2c','Second partner’s CNIC'],['biz','Firm name'],['addr','Business address','area'],['nature','Nature of business','area'],['cap1','First partner’s capital (Rs.)','number'],['cap2','Second partner’s capital (Rs.)','number'],['ratio','Profit sharing ratio','text','50:50']],
+doc:v=>({title:'PARTNERSHIP DEED',wit:1,p:[
+`This Partnership Deed is made at ${v('city')} on ${v('date')} between ${v('p1')}, holder of CNIC No. ${v('p1c')} (the “First Partner”), and ${v('p2')}, holder of CNIC No. ${v('p2c')} (the “Second Partner”).`,
+`1. The partners agree to carry on business in partnership under the name ${v('biz')} at ${v('addr')}, the business being ${v('nature')}.`,
+`2. The capital contributions are Rs. ${v('cap1')} by the First Partner and Rs. ${v('cap2')} by the Second Partner.`,
+`3. Profits and losses shall be shared in the ratio ${v('ratio')}.`,
+`4. Each partner shall devote time and attention to the business and act in good faith toward the other.`,
+`5. Proper books of account shall be kept at the business premises and be open to inspection by each partner.`,
+`6. No partner may admit a new partner or transfer his or her share without the written consent of the other.`,
+`7. The partnership may be dissolved by mutual consent, or by either partner giving three months’ written notice, and accounts shall then be settled between the partners.`,
+`8. This Deed is governed by the Partnership Act, 1932.`],
+sig:[['First Partner','p1'],['Second Partner','p2']]})}
+};
+const $=id=>document.getElementById(id);
+const v=k=>{const f=T[cur].f.find(x=>x[0]===k);let x=vals[k];if(x===undefined||x==='')return`<span class="ph">[${esc(f?f[1]:k)}]</span>`;if(f&&f[2]==='date')x=fmtD(x);return esc(x)};
+function render(){
+  const ur=lang==='ur'&&T[cur].ur;const d=(ur?T[cur].ur:T[cur].doc)(v);$('paper').dir=ur?'rtl':'ltr';
+  const sig=d.sig.map(([r,k])=>`<div><i></i>${r}<br>${vals[k]?esc(vals[k]):'<span class="ph">[Name]</span>'}</div>`).join('');
+  const wit=d.wit?`<div class="wit"><h4>${ur?'گواہان':'WITNESSES'}</h4><div class="sigs" style="margin-top:28px">${[1,2].map(n=>`<div><i></i>${n}. ${ur?'نام اور شناختی کارڈ نمبر':'Name and CNIC'}</div>`).join('')}</div></div>`:'';
+  $('paper').innerHTML=`<h1>${d.title}</h1>`+d.p.map(x=>`<p>${x}</p>`).join('')+`<div class="sigs">${sig}</div>`+wit+(lang==='ur'&&!T[cur].ur?'<p class="ph" dir="ltr">Urdu version not yet available for this template; showing English.</p>':'');
+}
+function save(){try{localStorage.setItem('dw:'+cur,JSON.stringify(vals))}catch(e){}}
+function load(){vals={};try{vals=JSON.parse(localStorage.getItem('dw:'+cur)||'{}')||{}}catch(e){vals={}}
+  T[cur].f.forEach(([k,,t,def])=>{if(vals[k]===undefined&&def)vals[k]=def==='today'?today():def})}
+function buildForm(){
+  $('form').innerHTML=T[cur].f.map(([k,l,t])=>`<label for="f_${k}">${l}</label>`+(t==='area'?`<textarea id="f_${k}" data-k="${k}">${esc(vals[k]||'')}</textarea>`:`<input id="f_${k}" data-k="${k}" type="${t||'text'}"${PNs().has(k)?' list="clients"':''} value="${esc(vals[k]||'')}">`)).join('');
+}
+function buildTabs(){
+  $('tabs').innerHTML=Object.entries(T).map(([id,t])=>`<button type="button" data-id="${id}" aria-pressed="${id===cur}">${t.name}<small>${t.desc}</small></button>`).join('');
+}
+function show(id){cur=id;load();buildTabs();buildForm();render()}
+$('tabs').addEventListener('click',e=>{const b=e.target.closest('button');if(b)show(b.dataset.id)});
+$('form').addEventListener('input',e=>{const k=e.target.dataset.k;if(!k)return;vals[k]=e.target.value;const p=(PTY[cur]||[]).find(x=>x[0]===k);if(p){const c=clients().find(c=>c.n===e.target.value);if(c){vals[p[1]]=c.c;const el=$('f_'+p[1]);if(el)el.value=c.c}}save();render()});
+$('clear').onclick=()=>{vals={};save();T[cur].f.forEach(([k,,t,def])=>{if(def)vals[k]=def==='today'?today():def});buildForm();render()};
+$('copy').onclick=async()=>{const b=$('copy');try{await navigator.clipboard.writeText($('paper').innerText);b.textContent='Copied'}catch(e){const r=document.createRange();r.selectNodeContents($('paper'));const s=getSelection();s.removeAllRanges();s.addRange(r);b.textContent='Selected: press copy'}setTimeout(()=>b.textContent='Copy text',2000)};
+$('print').onclick=()=>{try{window.print()}catch(e){}};
+const fillList=()=>{$('clients').innerHTML=clients().map(c=>`<option value="${esc(c.n)}">`).join('')};
+$('addc').onclick=()=>{const L=clients();(PTY[cur]||[]).forEach(([n,c])=>{if(vals[n]&&!L.some(x=>x.n===vals[n]))L.push({n:vals[n],c:vals[c]||''})});try{localStorage.setItem('dw:clients',JSON.stringify(L))}catch(e){}fillList();const b=$('addc');b.textContent='Saved';setTimeout(()=>b.textContent='Save parties to client book',1800)};
+$('lang').onclick=()=>{lang=lang==='en'?'ur':'en';$('lang').textContent=lang==='en'?'اردو':'English';render()};
+fillList();show('tenancy');
+</script>
+</body>
+</html>
